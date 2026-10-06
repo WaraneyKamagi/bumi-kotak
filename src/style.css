@@ -124,6 +124,101 @@ body, html {
   letter-spacing: 0.02em;
 }
 
+/* Quick Planet Navigation Bar in Top HUD */
+.planet-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: var(--radius-full);
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.planet-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.planet-nav-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.planet-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-panorama { background: #c084fc; box-shadow: 0 0 8px #c084fc; }
+.dot-earth { background: #38bdf8; box-shadow: 0 0 8px #38bdf8; }
+.dot-venus { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
+.dot-mars { background: #f87171; box-shadow: 0 0 8px #f87171; }
+
+.planet-pill-tag {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Active States per Planet */
+.planet-nav-btn.active[data-cam="cinematic"] {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(192, 132, 252, 0.5);
+  color: #e9d5ff;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.35);
+}
+
+.planet-nav-btn.active[data-cam="earth"] {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #7dd3fc;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+}
+
+.planet-nav-btn.active[data-cam="venus"] {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.55);
+  color: #fde047;
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.35);
+}
+
+.planet-nav-btn.active[data-cam="venus"] .planet-pill-tag {
+  background: rgba(251, 191, 36, 0.25);
+  color: #fef08a;
+}
+
+.planet-nav-btn.active[data-cam="mars"] {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(248, 113, 113, 0.55);
+  color: #fca5a5;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
+}
+
+.planet-nav-btn.active[data-cam="mars"] .planet-pill-tag {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fecaca;
+}
+
 .status-section {
   display: flex;
   align-items: center;
@@ -342,6 +437,24 @@ body, html {
   color: var(--accent-cyan);
 }
 
+.dock-btn.cam-btn.active[data-cam="venus"] {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: #fbbf24;
+  color: #fde047;
+}
+
+.dock-btn.cam-btn.active[data-cam="mars"] {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+.dock-btn.cam-btn.active[data-cam="cinematic"] {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: #c084fc;
+  color: #e9d5ff;
+}
+
 /* Time Slider Control */
 .time-slider-box {
   display: flex;
@@ -412,6 +525,12 @@ body, html {
 }
 
 /* Responsive adjustments for Tablets & Mobile */
+@media (max-width: 990px) {
+  .planet-pill-tag {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .top-hud {
     top: 12px;
@@ -425,7 +544,22 @@ body, html {
 
 @media (max-width: 768px) {
   .top-hud {
+    flex-wrap: wrap;
     gap: 8px;
+  }
+  .planet-nav-bar {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+    padding: 4px 6px;
+    gap: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+  .planet-nav-btn {
+    padding: 5px 9px;
+    font-size: 0.74rem;
+    gap: 5px;
   }
   .brand-logo-cube {
     width: 36px;

@@ -366,6 +366,7 @@ export class CubeWorld {
       opacity: 0.45
     });
     this.coreWireframe = new THREE.Mesh(wireGeom, wireMat);
+    this.coreWireframe.raycast = () => {};
     this.coreGroup.add(this.coreWireframe);
 
     this.planetGroup.add(this.coreGroup);
@@ -376,20 +377,15 @@ export class CubeWorld {
     const atmoSize = 10.65;
     const atmoGeom = new THREE.BoxGeometry(atmoSize, atmoSize, atmoSize);
 
-    // Translucent cyan volume
+    // Translucent cyan volume (pass-through raycast to surface below)
     this.atmoMesh = new THREE.Mesh(atmoGeom, this.materials.atmoShell);
-    this.atmoMesh.userData = {
-      name: 'Lapisan Atmosfer Kubus',
-      category: 'Atmosfer',
-      temp: '-15 °C',
-      elevation: '+50 km (Eksosfer)',
-      feature: 'Kubah atmosfer kubik pelindung radiasi kosmik dan penyedia biosfer.'
-    };
+    this.atmoMesh.raycast = () => {};
     this.planetGroup.add(this.atmoMesh);
 
     // Distinct glowing cyan border lines
     const edgesGeom = new THREE.EdgesGeometry(atmoGeom);
     this.atmoLines = new THREE.LineSegments(edgesGeom, this.materials.atmoLine);
+    this.atmoLines.raycast = () => {};
     this.planetGroup.add(this.atmoLines);
   }
 
@@ -602,11 +598,11 @@ export class CubeWorld {
 
   setupVenus() {
     this.venusGroup = new THREE.Group();
-    const S = 8.6; // Venus size (slightly smaller than Earth)
+    const S = 9.6; // Same size as Earth (9.6)
     const HALF_S = S / 2;
-    this.venusGroup.position.set(-23, 0, -3);
-    // Angle so the exposed half-core directly faces front-left toward the viewer
-    this.venusGroup.rotation.y = Math.PI * 0.28;
+    this.venusGroup.position.set(-19, 0, -2);
+    // Angle so the exposed half-core directly faces front-right toward the viewer
+    this.venusGroup.rotation.y = -Math.PI * 0.28;
 
     // --- 1. Half Outer Shell (X <= 0) ---
     const shellGroup = new THREE.Group();
@@ -616,11 +612,11 @@ export class CubeWorld {
     halfBaseMesh.castShadow = true;
     halfBaseMesh.receiveShadow = true;
     halfBaseMesh.userData = {
-      name: 'Venus Kotak (Kerak Atmosfer Sulfur)',
-      category: 'Planet Kebumian',
+      name: 'Permukaan Kerak Venus (Sulfur Crust)',
+      category: 'Kerak Planet',
       temp: '465 °C',
-      elevation: '+92 atm (Tekanan)',
-      feature: 'Setengah sisi planet tertutup awan asam sulfat tebal bersuhu ekstrem dan badai vulkanik.'
+      elevation: '+92 atm (Tekanan Superkritis)',
+      feature: 'Daratan batuan basal panas berselimut awan gas sulfur asam pekat.'
     };
     shellGroup.add(halfBaseMesh);
 
@@ -637,25 +633,45 @@ export class CubeWorld {
     };
 
     // Sulfur cloud bands on outer faces
-    addVoxel(-HALF_S / 2, 1.8, HALF_S + 0.15, HALF_S * 0.9, 1.2, 0.3, this.materials.venusCloud, {
+    addVoxel(-HALF_S / 2, 2.0, HALF_S + 0.15, HALF_S * 0.9, 1.3, 0.35, this.materials.venusCloud, {
       name: 'Pita Awan Asam Sulfur Venus',
       category: 'Troposfer Venus',
       temp: '380 °C',
       elevation: '+45 km dpl',
-      feature: 'Gelombang awan gas sulfur pembawa efek rumah kaca tak terkendali.'
+      feature: 'Gelombang awan gas asam sulfur pekat pembawa efek rumah kaca tak terkendali.'
     });
-    addVoxel(-HALF_S / 2, -1.5, HALF_S + 0.15, HALF_S * 0.7, 1.0, 0.3, this.materials.venusRidge);
-    addVoxel(-HALF_S / 2, 0.2, -HALF_S - 0.15, HALF_S * 0.8, 1.5, 0.3, this.materials.venusCloud);
-    addVoxel(-HALF_S - 0.15, 0.5, 0, 0.3, 3.2, 3.5, this.materials.venusRidge);
+    addVoxel(-HALF_S / 2, -1.8, HALF_S + 0.15, HALF_S * 0.75, 1.2, 0.35, this.materials.venusRidge, {
+      name: 'Pegunungan Vulkanik Venus (Maxwell Montes)',
+      category: 'Relief Vulkanik',
+      temp: '440 °C',
+      elevation: '+11 km dpl',
+      feature: 'Puncak gunung tertinggi di Venus yang diselimuti salju logam semikonduktor.'
+    });
+    addVoxel(-HALF_S / 2, 0.2, -HALF_S - 0.15, HALF_S * 0.85, 1.8, 0.35, this.materials.venusCloud, {
+      name: 'Vorteks Atmosfer Super-Rotasi Venus',
+      category: 'Dinamika Atmosfer',
+      temp: '370 °C',
+      elevation: '+55 km dpl',
+      feature: 'Pusaran badai gas atmosfer asam sulfur yang berputar 60 kali lebih cepat dari rotasi planet.'
+    });
+    addVoxel(-HALF_S - 0.15, 0.5, 0, 0.35, 3.8, 3.8, this.materials.venusRidge, {
+      name: 'Dataran Tinggi Ishtar Terra',
+      category: 'Benua Venus',
+      temp: '450 °C',
+      elevation: '+4,200 m',
+      feature: 'Wilayah daratan benua dataran tinggi berukuran benua Australia di belahan utara Venus.'
+    });
 
-    // Half atmosphere box & bounding line
+    // Half atmosphere box & bounding line (pass-through raycast to surface below)
     const atmoGeom = new THREE.BoxGeometry(HALF_S * 1.08, S * 1.08, S * 1.08);
     const atmoMesh = new THREE.Mesh(atmoGeom, this.materials.venusAtmo);
     atmoMesh.position.set(-HALF_S * 1.08 / 2, 0, 0);
+    atmoMesh.raycast = () => {};
     shellGroup.add(atmoMesh);
 
     const atmoEdges = new THREE.LineSegments(new THREE.EdgesGeometry(atmoGeom), this.materials.venusAtmoLine);
     atmoEdges.position.copy(atmoMesh.position);
+    atmoEdges.raycast = () => {};
     shellGroup.add(atmoEdges);
 
     this.venusGroup.add(shellGroup);
@@ -666,11 +682,11 @@ export class CubeWorld {
     const mantleMesh = new THREE.Mesh(mantleGeom, this.materials.venusMantle);
     mantleMesh.position.set(-0.1, 0, 0);
     mantleMesh.userData = {
-      name: 'Mantel Batuan Venus (Silicate Mantle)',
-      category: 'Lapisan Dalam',
+      name: 'Mantel Batuan Silikat Venus',
+      category: 'Mantel Planet',
       temp: '1,800 °C',
-      elevation: '-2,500 km kedalaman',
-      feature: 'Lapisan mantel batuan silikat tebal dengan arus konveksi magma vulkanik.'
+      elevation: '-2,800 km kedalaman',
+      feature: 'Lapisan mantel batuan silikat tebal dengan arus konveksi magma vulkanik aktif.'
     };
     this.venusGroup.add(mantleMesh);
 
@@ -679,10 +695,10 @@ export class CubeWorld {
     const outerCoreMesh = new THREE.Mesh(outerCoreGeom, this.materials.venusCore);
     outerCoreMesh.position.set(-0.05, 0, 0);
     outerCoreMesh.userData = {
-      name: 'Inti Luar Cair Venus (Liquid Core)',
-      category: 'Inti Planet',
+      name: 'Cincin Inti Luar Cair Venus',
+      category: 'Magma Logam',
       temp: '3,800 °C',
-      elevation: '-4,000 km kedalaman',
+      elevation: '-4,200 km kedalaman',
       feature: 'Logam besi-nikel cair berpendar dengan tekanan geomagnetik tinggi.'
     };
     this.venusGroup.add(outerCoreMesh);
@@ -697,7 +713,7 @@ export class CubeWorld {
       category: 'Pusat Planet',
       temp: '4,500 °C',
       elevation: 'Pusat Planet (Radius 1,500 km)',
-      feature: 'Inti besi-nikel padat super-panas yang terpapar pada belahan 50% planet.'
+      feature: 'Inti besi-nikel padat super-panas yang terpapar pada potongan 50% planet.'
     };
     this.venusGroup.add(this.venusCoreMesh);
 
@@ -706,10 +722,11 @@ export class CubeWorld {
     const wireMat = new THREE.MeshBasicMaterial({ color: 0xffe066, wireframe: true, transparent: true, opacity: 0.5 });
     this.venusWire = new THREE.Mesh(wireGeom, wireMat);
     this.venusWire.position.copy(this.venusCoreMesh.position);
+    this.venusWire.raycast = () => {};
     this.venusGroup.add(this.venusWire);
 
     // Internal Point Light shining outward from cut
-    this.venusLight = new THREE.PointLight(0xfbbf24, 3.2, 18, 1.2);
+    this.venusLight = new THREE.PointLight(0xfbbf24, 3.2, 20, 1.2);
     this.venusLight.position.set(1.5, 0, 0);
     this.venusGroup.add(this.venusLight);
 
@@ -725,6 +742,7 @@ export class CubeWorld {
     emberGeom.setAttribute('position', new THREE.BufferAttribute(emberPos, 3));
     const emberMat = new THREE.PointsMaterial({ color: 0xf59e0b, size: 0.35, transparent: true, opacity: 0.85 });
     this.venusEmbers = new THREE.Points(emberGeom, emberMat);
+    this.venusEmbers.raycast = () => {};
     this.venusGroup.add(this.venusEmbers);
 
     this.scene.add(this.venusGroup);
@@ -732,9 +750,9 @@ export class CubeWorld {
 
   setupMars() {
     this.marsGroup = new THREE.Group();
-    const S = 6.8; // Mars size (compact red planet)
+    const S = 9.6; // Same size as Earth (9.6)
     const HALF_S = S / 2;
-    this.marsGroup.position.set(23, 0, 3);
+    this.marsGroup.position.set(19, 0, 2);
     // Angle so the exposed half-core directly faces front-right toward the viewer
     this.marsGroup.rotation.y = -Math.PI * 0.28;
 
@@ -746,8 +764,8 @@ export class CubeWorld {
     halfBaseMesh.castShadow = true;
     halfBaseMesh.receiveShadow = true;
     halfBaseMesh.userData = {
-      name: 'Mars Kotak (Kerak Oksida Besi)',
-      category: 'Planet Merah',
+      name: 'Dataran Gurun Karat Mars (Rust Crust)',
+      category: 'Kerak Planet',
       temp: '-65 °C',
       elevation: '+1,200 m (Dataran Tharsis)',
       feature: 'Daratan gurun merah berdebu besi oksida dengan kawah vulkanik purba.'
@@ -766,7 +784,7 @@ export class CubeWorld {
     };
 
     // Polar ice cap on top pole (+Y)
-    addVoxel(-HALF_S / 2, HALF_S + 0.15, 0, HALF_S * 0.8, 0.3, S * 0.7, this.materials.marsIce, {
+    addVoxel(-HALF_S / 2, HALF_S + 0.15, 0, HALF_S * 0.8, 0.35, S * 0.7, this.materials.marsIce, {
       name: 'Tudung Es Kutub Mars (Planum Boreum)',
       category: 'Kriosfer Mars',
       temp: '-125 °C',
@@ -775,25 +793,42 @@ export class CubeWorld {
     });
 
     // Valles Marineris Canyon rift on equator
-    addVoxel(-HALF_S / 2, 0, HALF_S + 0.15, HALF_S * 0.9, 0.8, 0.3, this.materials.marsDarkRock, {
+    addVoxel(-HALF_S / 2, 0, HALF_S + 0.15, HALF_S * 0.9, 0.9, 0.35, this.materials.marsDarkRock, {
       name: 'Ngarai Raksasa Valles Marineris',
-      category: 'Formasi Tektonik',
+      category: 'Celah Tektonik',
       temp: '-55 °C',
-      elevation: '-7,000 m (Kedalaman)',
-      feature: 'Celah ngarai terpanjang dan terdalam di tata surya kotak.'
+      elevation: '-7,000 m (Palung Ngarai)',
+      feature: 'Ngarai terpanjang di tata surya dengan panjang 4.000 km dan kedalaman 7 km.'
+    });
+
+    // Olympus Mons (Volcano Shield)
+    addVoxel(-HALF_S / 2, 1.4, -HALF_S - 0.15, HALF_S * 0.75, 1.5, 0.35, this.materials.marsDarkRock, {
+      name: 'Gunung Berapi Olympus Mons',
+      category: 'Supervolcano Mars',
+      temp: '-70 °C',
+      elevation: '+21,900 m (Puncak Tertinggi)',
+      feature: 'Gunung berapi perisai raksasa tertinggi di tata surya, tingginya hampir 3 kali lipat Everest.'
     });
 
     // Dark volcanic basalt patches
-    addVoxel(-HALF_S - 0.15, -1.0, -0.5, 0.3, 2.2, 2.4, this.materials.marsDarkRock);
+    addVoxel(-HALF_S - 0.15, -1.0, -0.5, 0.35, 2.8, 3.0, this.materials.marsDarkRock, {
+      name: 'Formasi Batuan Basaltik Kuno Mars',
+      category: 'Vulkanisme Purba',
+      temp: '-60 °C',
+      elevation: '+600 m',
+      feature: 'Hamparan batuan beku vulkanik peninggalan erupsi jutaan tahun lalu.'
+    });
 
-    // Half atmosphere box & bounding line
+    // Half atmosphere box & bounding line (pass-through raycast to surface below)
     const atmoGeom = new THREE.BoxGeometry(HALF_S * 1.08, S * 1.08, S * 1.08);
     const atmoMesh = new THREE.Mesh(atmoGeom, this.materials.marsAtmo);
     atmoMesh.position.set(-HALF_S * 1.08 / 2, 0, 0);
+    atmoMesh.raycast = () => {};
     shellGroup.add(atmoMesh);
 
     const atmoEdges = new THREE.LineSegments(new THREE.EdgesGeometry(atmoGeom), this.materials.marsAtmoLine);
     atmoEdges.position.copy(atmoMesh.position);
+    atmoEdges.raycast = () => {};
     shellGroup.add(atmoEdges);
 
     this.marsGroup.add(shellGroup);
@@ -804,11 +839,11 @@ export class CubeWorld {
     const mantleMesh = new THREE.Mesh(mantleGeom, this.materials.marsMantle);
     mantleMesh.position.set(-0.1, 0, 0);
     mantleMesh.userData = {
-      name: 'Mantel Basalt Mars (Silicate Mantle)',
-      category: 'Lapisan Dalam',
+      name: 'Penampang Mantel Basalt Mars',
+      category: 'Mantel Planet',
       temp: '1,200 °C',
       elevation: '-1,800 km kedalaman',
-      feature: 'Mantel batuan basaltik kaya besi dan magnesium yang kini telah mengeras.'
+      feature: 'Mantel batuan basaltik kaya besi dan magnesium yang kini telah membeku.'
     };
     this.marsGroup.add(mantleMesh);
 
@@ -818,7 +853,7 @@ export class CubeWorld {
     outerCoreMesh.position.set(-0.05, 0, 0);
     outerCoreMesh.userData = {
       name: 'Lapisan Inti Besi-Belerang Mars',
-      category: 'Inti Planet',
+      category: 'Inti Luar',
       temp: '2,200 °C',
       elevation: '-2,800 km kedalaman',
       feature: 'Campuran besi, nikel, dan belerang cair dengan kepadatan tinggi.'
@@ -831,7 +866,7 @@ export class CubeWorld {
     this.marsCoreMesh.position.set(S * 0.05, 0, 0);
     this.marsCoreMesh.castShadow = true;
     this.marsCoreMesh.userData = {
-      name: 'Inti Logam Mars (Exposed Core)',
+      name: 'Inti Logam Beku Mars (Exposed Core)',
       category: 'Pusat Planet',
       temp: '2,800 °C',
       elevation: 'Pusat Planet (Radius 1,700 km)',
@@ -844,10 +879,11 @@ export class CubeWorld {
     const wireMat = new THREE.MeshBasicMaterial({ color: 0xff6b6b, wireframe: true, transparent: true, opacity: 0.5 });
     this.marsWire = new THREE.Mesh(wireGeom, wireMat);
     this.marsWire.position.copy(this.marsCoreMesh.position);
+    this.marsWire.raycast = () => {};
     this.marsGroup.add(this.marsWire);
 
     // Internal Point Light shining outward from cut
-    this.marsLight = new THREE.PointLight(0xef4444, 2.8, 16, 1.2);
+    this.marsLight = new THREE.PointLight(0xef4444, 2.8, 18, 1.2);
     this.marsLight.position.set(1.5, 0, 0);
     this.marsGroup.add(this.marsLight);
 
@@ -863,6 +899,7 @@ export class CubeWorld {
     emberGeom.setAttribute('position', new THREE.BufferAttribute(emberPos, 3));
     const emberMat = new THREE.PointsMaterial({ color: 0xef4444, size: 0.32, transparent: true, opacity: 0.85 });
     this.marsEmbers = new THREE.Points(emberGeom, emberMat);
+    this.marsEmbers.raycast = () => {};
     this.marsGroup.add(this.marsEmbers);
 
     this.scene.add(this.marsGroup);
@@ -889,16 +926,16 @@ export class CubeWorld {
 
   setCameraPreset(preset) {
     if (preset === 'venus') {
-      return { position: { x: -23 + 12, y: 8, z: -3 + 12 }, target: { x: -23, y: 0, z: -3 } };
+      return { position: { x: -19 + 14.5, y: 10, z: -2 + 14.5 }, target: { x: -19, y: 0, z: -2 } };
     } else if (preset === 'mars') {
-      return { position: { x: 23 + 10, y: 7, z: 3 + 10 }, target: { x: 23, y: 0, z: 3 } };
+      return { position: { x: 19 + 14.5, y: 10, z: 2 + 14.5 }, target: { x: 19, y: 0, z: 2 } };
     } else if (preset === 'earth') {
-      return { position: { x: 16.5, y: 14.5, z: 16.5 }, target: { x: 0, y: 0, z: 0 } };
+      return { position: { x: 16.5, y: 13.5, z: 16.5 }, target: { x: 0, y: 0, z: 0 } };
     } else if (preset === 'top') {
       return { position: { x: 0, y: 26, z: 0.1 }, target: { x: 0, y: 0, z: 0 } };
     } else {
-      // Default Panorama viewing all 3 planets together
-      return { position: { x: 20, y: 18, z: 28 }, target: { x: 0, y: 0, z: 0 } };
+      // Default Panorama viewing all 3 planets side by side
+      return { position: { x: 0, y: 16, z: 50 }, target: { x: 0, y: 0, z: 0 } };
     }
   }
 

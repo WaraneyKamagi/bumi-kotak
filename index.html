@@ -25,6 +25,28 @@
         </div>
       </div>
 
+      <!-- Quick Planet Navigation Bar -->
+      <nav class="planet-nav-bar glass-panel" aria-label="Navigasi Planet">
+        <button class="planet-nav-btn active cam-btn" data-cam="cinematic" title="Tampak Panorama Tiga Planet">
+          <span class="planet-indicator dot-panorama"></span>
+          <span class="planet-label">🌌 Panorama</span>
+        </button>
+        <button class="planet-nav-btn cam-btn" data-cam="earth" title="Fokus Bumi Kotak">
+          <span class="planet-indicator dot-earth"></span>
+          <span class="planet-label">🌍 Bumi</span>
+        </button>
+        <button class="planet-nav-btn cam-btn" data-cam="venus" title="Fokus Venus Kotak (Potongan 50% Inti)">
+          <span class="planet-indicator dot-venus"></span>
+          <span class="planet-label">🟡 Venus</span>
+          <span class="planet-pill-tag">50% Inti</span>
+        </button>
+        <button class="planet-nav-btn cam-btn" data-cam="mars" title="Fokus Mars Kotak (Potongan 50% Inti)">
+          <span class="planet-indicator dot-mars"></span>
+          <span class="planet-label">🔴 Mars</span>
+          <span class="planet-pill-tag">50% Inti</span>
+        </button>
+      </nav>
+
       <div class="status-section">
         <div class="telemetry-pill glass-panel">
           <div class="status-dot"></div>
@@ -99,12 +121,12 @@
 
       <div class="dock-divider"></div>
 
-      <!-- Camera Presets -->
-      <div class="dock-group">
+      <!-- Camera Presets / Navigasi Planet -->
+      <div class="dock-group planet-dock-group">
         <button class="dock-btn active cam-btn" data-cam="cinematic" title="Tampak Panorama Tiga Planet">🌌 Panorama</button>
         <button class="dock-btn cam-btn" data-cam="earth" title="Fokus Bumi Kotak">🌍 Bumi</button>
-        <button class="dock-btn cam-btn" data-cam="venus" title="Fokus Venus Kotak (Potongan Setengah Inti)">🟡 Venus</button>
-        <button class="dock-btn cam-btn" data-cam="mars" title="Fokus Mars Kotak (Potongan Setengah Inti)">🔴 Mars</button>
+        <button class="dock-btn cam-btn" data-cam="venus" title="Fokus Venus Kotak (Potongan 50% Inti)">🟡 Venus</button>
+        <button class="dock-btn cam-btn" data-cam="mars" title="Fokus Mars Kotak (Potongan 50% Inti)">🔴 Mars</button>
       </div>
     </nav>
 
