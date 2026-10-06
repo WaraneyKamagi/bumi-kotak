@@ -30,6 +30,94 @@ const inspElev = document.getElementById('insp-elev');
 // 1. Explode / Reassemble Core (Powered by Anime.js)
 let isExploded = false;
 
+function updateExplodeButtonText() {
+  if (isExploded) {
+    btnExplodeText.textContent = 'Satukan Planet';
+  } else {
+    if (currentPlanetTarget === 'venus') {
+      btnExplodeText.textContent = 'Bongkar Inti Venus';
+    } else if (currentPlanetTarget === 'mars') {
+      btnExplodeText.textContent = 'Bongkar Inti Mars';
+    } else if (currentPlanetTarget === 'earth') {
+      btnExplodeText.textContent = 'Bongkar Inti Bumi';
+    } else {
+      btnExplodeText.textContent = 'Bongkar Semua Planet';
+    }
+  }
+}
+
+function explodeEarth(shouldExplode) {
+  if (!world.faceGroups) return;
+  world.faceGroups.forEach((face, index) => {
+    const targetPos = shouldExplode ? face.userData.explodedPosition : face.userData.initialPosition;
+    animate(face.position, {
+      x: targetPos.x,
+      y: targetPos.y,
+      z: targetPos.z,
+      duration: shouldExplode ? (1200 + index * 80) : (900 + index * 60),
+      ease: shouldExplode ? 'outBack(1.2)' : 'outExpo'
+    });
+  });
+
+  if (world.coreMesh) {
+    animate(world.coreMesh.scale, {
+      x: shouldExplode ? 1.15 : 1,
+      y: shouldExplode ? 1.15 : 1,
+      z: shouldExplode ? 1.15 : 1,
+      duration: shouldExplode ? 1000 : 800,
+      ease: shouldExplode ? 'outExpo' : 'outQuad'
+    });
+  }
+}
+
+function explodeVenus(shouldExplode) {
+  if (!world.venusParts) return;
+  world.venusParts.forEach((part, index) => {
+    const targetPos = shouldExplode ? part.explodedPosition : part.initialPosition;
+    animate(part.mesh.position, {
+      x: targetPos.x,
+      y: targetPos.y,
+      z: targetPos.z,
+      duration: shouldExplode ? (1200 + index * 90) : (900 + index * 70),
+      ease: shouldExplode ? 'outBack(1.2)' : 'outExpo'
+    });
+    if (part.explodedScale) {
+      const targetScale = shouldExplode ? part.explodedScale : part.initialScale;
+      animate(part.mesh.scale, {
+        x: targetScale.x,
+        y: targetScale.y,
+        z: targetScale.z,
+        duration: shouldExplode ? 1000 : 800,
+        ease: shouldExplode ? 'outExpo' : 'outQuad'
+      });
+    }
+  });
+}
+
+function explodeMars(shouldExplode) {
+  if (!world.marsParts) return;
+  world.marsParts.forEach((part, index) => {
+    const targetPos = shouldExplode ? part.explodedPosition : part.initialPosition;
+    animate(part.mesh.position, {
+      x: targetPos.x,
+      y: targetPos.y,
+      z: targetPos.z,
+      duration: shouldExplode ? (1200 + index * 90) : (900 + index * 70),
+      ease: shouldExplode ? 'outBack(1.2)' : 'outExpo'
+    });
+    if (part.explodedScale) {
+      const targetScale = shouldExplode ? part.explodedScale : part.initialScale;
+      animate(part.mesh.scale, {
+        x: targetScale.x,
+        y: targetScale.y,
+        z: targetScale.z,
+        duration: shouldExplode ? 1000 : 800,
+        ease: shouldExplode ? 'outExpo' : 'outQuad'
+      });
+    }
+  });
+}
+
 function toggleExplode() {
   isExploded = !isExploded;
   world.isExploded = isExploded;
@@ -37,53 +125,28 @@ function toggleExplode() {
   if (isExploded) {
     soundManager.playExplode();
     btnExplode.classList.add('exploded');
-    btnExplodeText.textContent = 'Satukan Planet';
+    updateExplodeButtonText();
 
-    // Animate face plates outwards using anime.js
-    world.faceGroups.forEach((face, index) => {
-      const targetPos = face.userData.explodedPosition;
-      animate(face.position, {
-        x: targetPos.x,
-        y: targetPos.y,
-        z: targetPos.z,
-        duration: 1200 + index * 80,
-        ease: 'outBack(1.2)'
-      });
-    });
-
-    // Expand core glow and scale
-    animate(world.coreMesh.scale, {
-      x: 1.15,
-      y: 1.15,
-      z: 1.15,
-      duration: 1000,
-      ease: 'outExpo'
-    });
+    if (currentPlanetTarget === 'earth') {
+      explodeEarth(true);
+    } else if (currentPlanetTarget === 'venus') {
+      explodeVenus(true);
+    } else if (currentPlanetTarget === 'mars') {
+      explodeMars(true);
+    } else {
+      // Panorama mode: Explode all three simultaneously
+      explodeEarth(true);
+      explodeVenus(true);
+      explodeMars(true);
+    }
   } else {
     soundManager.playAssemble();
     btnExplode.classList.remove('exploded');
-    btnExplodeText.textContent = 'Bongkar Inti Planet';
+    updateExplodeButtonText();
 
-    // Animate face plates back to snug cube
-    world.faceGroups.forEach((face, index) => {
-      const targetPos = face.userData.initialPosition;
-      animate(face.position, {
-        x: targetPos.x,
-        y: targetPos.y,
-        z: targetPos.z,
-        duration: 900 + index * 60,
-        ease: 'outExpo'
-      });
-    });
-
-    // Return core mesh scale
-    animate(world.coreMesh.scale, {
-      x: 1,
-      y: 1,
-      z: 1,
-      duration: 800,
-      ease: 'outQuad'
-    });
+    explodeEarth(false);
+    explodeVenus(false);
+    explodeMars(false);
   }
 }
 
@@ -150,8 +213,18 @@ const planetInfoPresets = {
 camButtons.forEach((btn) => {
   btn.addEventListener('click', () => {
     soundManager.playClick();
+    if (isExploded) {
+      isExploded = false;
+      world.isExploded = false;
+      btnExplode.classList.remove('exploded');
+      explodeEarth(false);
+      explodeVenus(false);
+      explodeMars(false);
+    }
+
     const presetName = btn.dataset.cam;
     currentPlanetTarget = presetName;
+    updateExplodeButtonText();
 
     // Keep all navigation buttons in sync
     camButtons.forEach((b) => {
