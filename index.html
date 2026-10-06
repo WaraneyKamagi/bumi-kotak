@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Bumi Kotak 3D — The Cubic Earth Simulation</title>
+    <meta name="description" content="Simulasi interaktif 3D Bumi Kotak (Cubic Planet) menggunakan Three.js dan Anime.js." />
+  </head>
+  <body>
+    <!-- 3D WebGL Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- Top Navigation HUD -->
+    <header class="top-hud">
+      <div class="brand-section">
+        <div class="brand-logo-cube">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 16.5C21 16.88 20.79 17.21 20.47 17.38L12.57 21.82C12.41 21.91 12.21 21.96 12 21.96C11.79 21.96 11.59 21.91 11.43 21.82L3.53 17.38C3.21 17.21 3 16.88 3 16.5V7.5C3 7.12 3.21 6.79 3.53 6.62L11.43 2.18C11.59 2.09 11.79 2.04 12 2.04C12.21 2.04 12.41 2.09 12.57 2.18L20.47 6.62C20.79 6.79 21 7.12 21 7.5V16.5Z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>BUMI KOTAK <span style="font-size:0.8rem; font-weight:400; opacity:0.7;">3D</span></h1>
+          <p class="brand-sub">Cubic Earth Observatory</p>
+        </div>
+      </div>
+
+      <div class="status-section">
+        <div class="telemetry-pill glass-panel">
+          <div class="status-dot"></div>
+          <span id="fps-display">60 FPS</span>
+          <span class="telemetry-sep" style="opacity:0.4;">|</span>
+          <span id="coords-display">LAT 0° • LON 0°</span>
+        </div>
+
+        <button id="btn-audio" class="icon-btn" title="Toggle Suara Audio" aria-label="Audio Toggle">
+          🔊
+        </button>
+      </div>
+    </header>
+
+    <!-- Hover/Tap Telemetry Inspector -->
+    <aside id="inspector-card" class="inspector-card glass-panel" aria-live="polite">
+      <div class="inspector-header">
+        <div>
+          <h2 id="insp-title" class="inspector-title">Kepulauan Nusantara</h2>
+          <span id="insp-badge" class="badge-tag">Tropis</span>
+        </div>
+        <button id="btn-close-insp" class="icon-btn close-btn" title="Tutup Info" aria-label="Tutup">✕</button>
+      </div>
+      <p id="insp-desc" class="inspector-desc">
+        Zamrud Khatulistiwa berbentuk kubus dengan keanekaragaman hayati dan gunung api aktif.
+      </p>
+      <div class="inspector-stats">
+        <div class="stat-item">
+          <span class="stat-label">Suhu Rata-rata</span>
+          <span id="insp-temp" class="stat-val">29 °C</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Elevasi / Relief</span>
+          <span id="insp-elev" class="stat-val">+1,200 m</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Quick Navigation Tips -->
+    <div class="tips-panel glass-panel">
+      <span>🖱️ Navigasi:</span> Putar (Klik Kiri) • Perbesar (Scroll) • Geser (Klik Kanan)
+    </div>
+
+    <!-- Bottom Floating Control Dock -->
+    <nav class="bottom-dock glass-panel">
+      <!-- Primary Core Explode Button -->
+      <button id="btn-explode" class="btn-explode">
+        <span class="btn-icon">💥</span>
+        <span id="btn-explode-text">Bongkar Inti Planet</span>
+      </button>
+
+      <div class="dock-divider"></div>
+
+      <!-- Auto Rotate Toggle -->
+      <button id="btn-rotate" class="dock-btn" title="Toggle Rotasi Otomatis">
+        <span>🔄</span> Rotasi
+      </button>
+
+      <!-- Time of Day Slider -->
+      <div class="time-slider-box">
+        <label for="time-slider">☀️ Waktu</label>
+        <input type="range" id="time-slider" class="time-slider" min="0" max="1" step="0.01" value="0.38" title="Atur Siang dan Malam" />
+      </div>
+
+      <div class="dock-divider"></div>
+
+      <!-- Biome Themes -->
+      <div class="dock-group">
+        <button class="dock-btn active theme-btn" data-theme="earth" title="Bioma Normal">🌍 Alami</button>
+        <button class="dock-btn theme-btn" data-theme="frost" title="Bioma Musim Dingin">❄️ Frost</button>
+      </div>
+
+      <div class="dock-divider"></div>
+
+      <!-- Camera Presets -->
+      <div class="dock-group">
+        <button class="dock-btn active cam-btn" data-cam="cinematic" title="Tampak Depan Isometrik Sesuai Referensi">📐 Isometrik</button>
+        <button class="dock-btn cam-btn" data-cam="top" title="Tampak Kutub Utara & Awan">🧭 Kutub</button>
+        <button class="dock-btn cam-btn" data-cam="equator" title="Tampak Khatulistiwa">🌴 Khatulistiwa</button>
+        <button class="dock-btn cam-btn" data-cam="asia" title="Tampak Belahan Asia & Pasifik">🌏 Asia</button>
+      </div>
+    </nav>
+
+    <script type="module" src="/src/main.js?v=2"></script>
+  </body>
+</html>
