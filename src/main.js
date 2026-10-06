@@ -222,6 +222,8 @@ function checkRaycast() {
 
   world.raycaster.setFromCamera(mousePos, world.camera);
   const intersectables = [world.planetGroup];
+  if (world.venusGroup) intersectables.push(world.venusGroup);
+  if (world.marsGroup) intersectables.push(world.marsGroup);
   const intersects = world.raycaster.intersectObjects(intersectables, true);
 
   // Find topmost hit with userData.name
